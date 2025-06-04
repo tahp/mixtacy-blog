@@ -4,6 +4,16 @@ import { getBlogPosts } from 'app/blog/utils'
 export async function GET() {
   let allBlogs = await getBlogPosts()
 
+  // Defensive: filter out posts with missing metadata or publishedAt
+  allBlogs = allBlogs.filter(
+    post =>
+      post &&
+      post.metadata &&
+      typeof post.metadata.publishedAt === 'string' &&
+      typeof post.metadata.title === 'string' &&
+      post.slug
+  )
+
   const itemsXml = allBlogs
     .sort((a, b) => {
       if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
